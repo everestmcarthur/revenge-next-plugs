@@ -1,0 +1,10 @@
+name = "revenge-next-plugs"
+compatibility_date = "2026-08-08"
+account_id = "dc5e308f1df2d6bb5082951d3f3993a5"
+
+[assets]
+directory = "build/dist"
+
+[[routes]]
+pattern = "next.jarviscli.dev"
+custom_domain = true
