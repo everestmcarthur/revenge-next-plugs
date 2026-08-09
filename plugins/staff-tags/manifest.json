@@ -3,7 +3,7 @@
 	"id": "dev.everestmcarthur.staff-tags",
 	"name": "Staff Tags",
 	"description": "Adds customizable tags (OWNER, ADMIN, STAFF, MOD, and more) next to members based on their server permissions. Supports per-tag colors, gradients, custom text, and visibility toggles.",
-	"author": "everestmcarthur",
+	"author": "Rosie",
 	"version": "1.0.5",
 	"dependencies": {
 		"revenge.api": {

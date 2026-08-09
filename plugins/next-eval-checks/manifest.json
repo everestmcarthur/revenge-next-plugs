@@ -3,7 +3,7 @@
 	"id": "dev.everestmcarthur.next-eval-checks",
 	"name": "Next Eval Checks",
 	"description": "One-shot diagnostic plugin for staff-tags' live-verify assumptions. Logs results to Settings > Debug Logs, then you can uninstall it.",
-	"author": "everestmcarthur",
+	"author": "Rosie",
 	"version": "1.0.4",
 	"dependencies": {
 		"revenge.api": {
