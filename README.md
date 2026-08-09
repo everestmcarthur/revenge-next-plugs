@@ -3,6 +3,17 @@
 Revenge Next plugin repository, scaffolded from [revenge-plugin-template](https://github.com/revenge-mod/revenge-plugin-template).
 Each plugin becomes one ZIP file. One repository can hold any number of plugins under `plugins/`.
 
+## Deployment
+
+This repository auto-deploys to **https://next.jarviscli.dev** on every push to `main`, via the
+GitHub Actions workflow in `.github/workflows/deploy.yml`.
+
+**Every plugin change requires bumping that plugin's `version` in its `manifest.json`.** The deploy
+publishes whatever is on disk under whatever version each `manifest.json` currently declares — if
+you edit a plugin without bumping its version, the deploy silently republishes the exact same
+version pointer with different bytes at the same URL. Clients that already installed that version
+will never see the update, since they only re-fetch an artifact when its version number changes.
+
 ## Plugins
 
 - `staff-tags` — ported from [revenge-plugins](https://github.com/everestmcarthur/revenge-plugins) (Classic).

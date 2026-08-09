@@ -3,6 +3,14 @@ name: Build and deploy
 on:
     push:
         branches: [main]
+    workflow_dispatch:
+
+concurrency:
+    group: deploy-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
 
 jobs:
     deploy:
@@ -13,6 +21,8 @@ jobs:
 
             - name: Set up Bun
               uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: "1.3.14"
 
             - name: Set up JDK 25
               uses: actions/setup-java@v4
@@ -33,3 +43,6 @@ jobs:
               env:
                   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
               run: bunx wrangler deploy
+
+            - name: Verify deployed index and artifact integrity
+              run: bun .github/scripts/verify-deploy.mjs
