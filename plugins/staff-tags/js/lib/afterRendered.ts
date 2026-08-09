@@ -21,6 +21,16 @@ import type { FC, ReactElement, ReactNode } from 'react'
  * component (`updateSimpleMemoComponent` calls the inner function, not the wrapper), and leaving
  * the wrapper's own shape (`$$typeof`/`compare`) untouched keeps React's own type detection
  * correct.
+ *
+ * CAUTION: only call this once per distinct memo-wrapped type, ever. The memo wrapper's inner
+ * `.type` is shared by every instance of that component (memo only produces one render function
+ * total), not fresh per instance the way a plain element's `.type` is - so calling this from
+ * something that re-registers on every render (e.g. an `afterJSX` callback firing once per
+ * `createElement`) stacks a new self-unpatching hook onto that same shared function each time,
+ * and each stacked hook fires on *any* instance's render, not just the one that registered it.
+ * That mismatch broke tag placement in the member list for a long time (see git history on
+ * `patches/details.tsx`) - `patches/details.tsx` now patches the memo case directly with a single
+ * persistent `@revenge-mod/patcher` `after()` instead of going through this helper.
  */
 export const afterRendered = (
 	element: ReactElement<any, FC<any>>,
@@ -32,10 +42,7 @@ export const afterRendered = (
 	}
 	const isMemoWrapped =
 		typeof element.type !== 'function' && typeof type?.type === 'function'
-	const target = (isMemoWrapped ? type : element) as Record<
-		'type',
-		FC<any>
-	>
+	const target = (isMemoWrapped ? type : element) as Record<'type', FC<any>>
 
 	return after(target, 'type', el =>
 		el instanceof Promise ? el.then(hook) : hook(el),
