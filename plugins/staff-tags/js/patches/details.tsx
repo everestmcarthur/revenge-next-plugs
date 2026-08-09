@@ -1,8 +1,6 @@
 import { Stores } from '@revenge-mod/discord/flux'
 import { getModules } from '@revenge-mod/modules/finders'
 import { afterJSX } from '@revenge-mod/react/jsx-runtime'
-import { findInReactFiber } from '@revenge-mod/utils/react'
-import { fiberFilter } from '../lib/fiber'
 import { withMemoDefaultName } from '../lib/filters'
 import getTag from '../lib/getTag'
 import { guard } from '../lib/safe'
@@ -107,10 +105,18 @@ export default function patchDetails(storage: JsonStorage<StaffTagsStorage>) {
 							| undefined
 						if (!label || !Array.isArray(label.props?.children)) return ret
 
-						const existingTag = findInReactFiber(
-							label as any,
-							fiberFilter(c => c?.type?.Types),
-						)
+						// A plain array `.find()`, not `findInReactFiber` - confirmed live that
+						// `findInReactFiber` doesn't match here. It's built for real React fiber
+						// nodes (`.child`/`.sibling`/`.return`), not the plain element tree `ret`
+						// actually is at this point (`innerRender`'s return value, pre-reconciliation
+						// - createElement() output, not yet a fiber). `label.props.children` is a
+						// flat, already-known array, so a direct search needs no fiber-walking helper.
+						const existingTag = (
+							label.props.children as {
+								type?: { Types?: unknown }
+								props?: any
+							}[]
+						).find(c => c?.type?.Types)
 						if (existingTag && existingTag.props?.type !== 0) return ret
 
 						const guild = GuildStore?.getGuild(guildId)
