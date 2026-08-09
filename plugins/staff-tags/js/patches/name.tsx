@@ -35,9 +35,21 @@ interface TagComponentProps {
  * Covers the name row shown in chat messages (next to the display name + timestamp) and channel
  * headers.
  *
+ * `HeaderName` doesn't exist under that name in the current build (confirmed live - Discord
+ * renamed/refactored it at some point). `ChannelHeader` is the confirmed replacement: found via a
+ * broad name-sweep as a plain, non-memo-wrapped function, high confidence given its name and
+ * shape - a plain `withName` lookup can find it directly, unlike `UserRow` in `details.tsx` which
+ * needed a memo-aware filter.
+ *
+ * `DisplayName` (the message-author-name row) is still unresolved - not found under any name even
+ * via a memo/forwardRef sweep and a text-content correlation sweep across two separate live
+ * sessions. Most likely inlined into a bigger message-row component now rather than factored out
+ * the way Classic had it. Left as a best-effort lookup below (guarded, silently no-ops) rather
+ * than guessed at - fixing this needs a fresh live investigation, not a guess.
+ *
  * Uses `getModules` (reacts once Discord itself initializes each module) instead of
  * `lookupModule` (which force-initializes uninitialized modules right away) - forcing
- * DisplayName/HeaderName/the Tag module to init during `start()`, before Discord is done
+ * DisplayName/ChannelHeader/the Tag module to init during `start()`, before Discord is done
  * booting, is what crashed app startup the first time this shipped.
  *
  * Every callback below is wrapped in `guard()`: it runs whenever Discord itself renders/
@@ -45,8 +57,9 @@ interface TagComponentProps {
  * synchronous setup calls - an uncaught throw here crashes app startup instead of just skipping
  * a name row.
  *
- * TODO(live-verify): DisplayName/HeaderName component names and rendered-tree shapes
- * (`c?.type?.Types`, the flexDirection: "row" container), see eval-for-revenge.
+ * TODO(live-verify): ChannelHeader's rendered-tree shape (`c?.type?.Types`, the
+ * flexDirection: "row" container) still unconfirmed, see eval-for-revenge. DisplayName remains
+ * fully unresolved.
  */
 export default function patchName(storage: JsonStorage<StaffTagsStorage>) {
 	const cleanups: (() => void)[] = []
@@ -69,11 +82,11 @@ export default function patchName(storage: JsonStorage<StaffTagsStorage>) {
 	}
 
 	const unsubHeaderName = getModules(
-		withName<FC<HeaderNameProps>>('HeaderName'),
-		HeaderName => {
+		withName<FC<HeaderNameProps>>('ChannelHeader'),
+		ChannelHeader => {
 			guard(() => {
 				cleanups.push(
-					afterJSX(HeaderName, el =>
+					afterJSX(ChannelHeader, el =>
 						guard(() => {
 							const { channelId } = el.props
 							const unpatch = afterRendered(el, ret =>

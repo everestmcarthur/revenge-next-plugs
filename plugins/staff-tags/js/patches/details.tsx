@@ -1,10 +1,11 @@
 import { Stores } from '@revenge-mod/discord/flux'
 import { getModules } from '@revenge-mod/modules/finders'
-import { withName, withProps } from '@revenge-mod/modules/finders/filters'
+import { withProps } from '@revenge-mod/modules/finders/filters'
 import { afterJSX } from '@revenge-mod/react/jsx-runtime'
 import { findInReactFiber } from '@revenge-mod/utils/react'
 import { afterRendered } from '../lib/afterRendered'
 import { fiberFilter } from '../lib/fiber'
+import { withMemoDefaultName } from '../lib/filters'
 import getTag from '../lib/getTag'
 import { guard } from '../lib/safe'
 import GradientTag from '../ui/GradientTag'
@@ -32,6 +33,13 @@ interface TagComponentProps {
  * profile popout, etc.), so this subscribes rather than doing a single lookup - `max` is a guess
  * and may need adjusting once verified live, see eval-for-revenge.
  *
+ * `UserRow` is real but `React.memo()`-wrapped (confirmed live via a memo-patching sweep) - a
+ * plain `withName('UserRow')` can never match it, since the wrapper object has no `.name` of its
+ * own (only the memo-hidden inner function does). `withMemoDefaultName` (`../lib/filters`) checks
+ * the wrapper's inner `.type.name` instead and matches on the full module namespace, so the
+ * callback below receives `{default: <memo wrapper>}` - `mod.default` is the exact reference
+ * Discord's own `createElement(UserRow, ...)` calls use, which is what `afterJSX` needs.
+ *
  * Uses `getModules` (reacts once Discord itself initializes each module) instead of
  * `lookupModule` (which force-initializes uninitialized modules right away) - forcing UserRow /
  * the Tag module to init during `start()`, before Discord is done booting, is what crashed app
@@ -42,8 +50,7 @@ interface TagComponentProps {
  * synchronous setup calls - an uncaught throw here crashes app startup instead of just skipping
  * one row.
  *
- * TODO(live-verify): UserRow component name/count, rendered-tree shape (`c?.type?.Types`), see
- * eval-for-revenge.
+ * TODO(live-verify): rendered-tree shape (`c?.type?.Types`) still unconfirmed, see eval-for-revenge.
  */
 export default function patchDetails(storage: JsonStorage<StaffTagsStorage>) {
 	const patches: (() => void)[] = []
@@ -63,9 +70,10 @@ export default function patchDetails(storage: JsonStorage<StaffTagsStorage>) {
 	}
 
 	const unsubUserRow = getModules(
-		withName<FC<UserRowProps>>('UserRow'),
-		UserRow => {
+		withMemoDefaultName('UserRow'),
+		mod => {
 			guard(() => {
+				const UserRow = (mod as { default: FC<UserRowProps> }).default
 				patches.push(
 					afterJSX(UserRow, el =>
 						guard(() => {
