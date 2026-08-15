@@ -10,7 +10,7 @@ const BASE_URL = process.env.VERIFY_BASE_URL ?? "https://next.jarviscli.dev";
 // itself had succeeded (confirmed live seconds later). Retrying with a short backoff instead of
 // failing on the first transient response avoids that false negative, and checking `res.ok`
 // turns any real failure into a clear status-code message instead of an opaque parse error.
-async function fetchWithRetry(url, { attempts = 5, delayMs = 3000, binary = false } = {}) {
+async function fetchWithRetry(url, { attempts = 5, delayMs = 3000, binary = false, html = false } = {}) {
     let lastError;
     for (let attempt = 1; attempt <= attempts; attempt++) {
         try {
@@ -18,7 +18,9 @@ async function fetchWithRetry(url, { attempts = 5, delayMs = 3000, binary = fals
             if (!res.ok) {
                 throw new Error(`${url} responded ${res.status} ${res.statusText}`);
             }
-            return binary ? await res.arrayBuffer() : await res.json();
+            if (binary) return await res.arrayBuffer();
+            if (html) return await res.text();
+            return await res.json();
         } catch (e) {
             lastError = e;
             if (attempt < attempts) {
@@ -46,3 +48,21 @@ if (hash !== v.sha256) {
 }
 
 console.log(`Verified ${id}@${version}: sha256 OK`);
+
+// New checks added for the next.jarviscli.dev site (browse/detail/admin pages).
+
+const detailHtml = await fetchWithRetry(`${BASE_URL}/plugins/${id}`, { html: true });
+if (!detailHtml.includes(`property="og:title" content="${plugin.name}"`)) {
+    throw new Error(`Plugin detail page for ${id} is missing correct og:title for "${plugin.name}"`);
+}
+console.log(`Verified ${id}: og:title present and correct`);
+
+const unauthedRes = await fetch(`${BASE_URL}/api/admin/overrides/${id}`, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: "{}",
+});
+if (unauthedRes.status !== 401) {
+    throw new Error(`Unauthenticated admin write should return 401, got ${unauthedRes.status}`);
+}
+console.log("Verified: unauthenticated admin write correctly rejected (401)");
