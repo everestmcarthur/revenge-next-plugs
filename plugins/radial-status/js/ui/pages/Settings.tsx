@@ -4,7 +4,6 @@ import ColorInput from '../ColorInput'
 import type { PluginApi } from '@revenge-mod/plugins/types'
 import type { RadialStatusStorage } from '../../lib/types'
 
-// Offline is opt-in (blank by default) since Discord doesn't show a colored dot for it normally.
 const STATUSES: { key: string; label: string; defaultColor?: string }[] = [
 	{ key: 'online', label: 'Online', defaultColor: '#23A55A' },
 	{ key: 'idle', label: 'Idle', defaultColor: '#F0B232' },
@@ -12,14 +11,6 @@ const STATUSES: { key: string; label: string; defaultColor?: string }[] = [
 	{ key: 'offline', label: 'Offline', defaultColor: '#80848E' },
 ]
 
-/**
- * `Design` is read inside the component (not destructured at module top level): external plugin
- * bundles run via a bare `new Function('revenge', 'plugin', script)` call at preInit with no
- * Metro-style dependency ordering, so `revenge.discord.design.Design`'s fields aren't guaranteed
- * populated yet at that point (see staff-tags/js/ui/pages/Settings.tsx for the same note). By the
- * time this actually renders (the user opened the plugin's settings page), Discord's design
- * system is long since ready.
- */
 export default function Settings({
 	api,
 }: {

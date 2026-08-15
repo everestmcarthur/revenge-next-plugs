@@ -5,13 +5,47 @@ export const PAGE_CSS = `
 		background: linear-gradient(180deg, #0c0d12, #08090c);
 		color: #fff;
 		font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+		overflow-x: hidden;
 	}
 	a { color: inherit; text-decoration: none; }
-	.wrap { max-width: 1040px; margin: 0 auto; padding: 0 32px; }
+	.wrap { max-width: 1040px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
 	header {
 		display: flex; align-items: center; justify-content: space-between;
 		padding: 20px 32px; border-bottom: 1px solid rgba(255,255,255,0.07);
+		position: relative; z-index: 1;
 	}
+
+	.bg-blobs { position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+	.bg-blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.32; animation: blobDrift ease-in-out infinite alternate; }
+	.bg-blob.b1 { width: 440px; height: 440px; top: -100px; left: -80px; background: #9a8cff; animation-duration: 24s; }
+	.bg-blob.b2 { width: 380px; height: 380px; top: 38%; right: -120px; background: #ff8fc7; animation-duration: 30s; animation-delay: -6s; }
+	.bg-blob.b3 { width: 360px; height: 360px; bottom: -120px; left: 28%; background: #6fe3e8; animation-duration: 34s; animation-delay: -12s; }
+	@keyframes blobDrift {
+		0% { transform: translate(0,0) scale(1); }
+		50% { transform: translate(40px,-30px) scale(1.08); }
+		100% { transform: translate(-30px,20px) scale(0.95); }
+	}
+
+	.floaters { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+	.float-icon { position: absolute; opacity: 0.16; animation: floatDrift linear infinite; will-change: transform; }
+	@keyframes floatDrift {
+		0% { transform: translate(0,0) rotate(0deg); }
+		25% { transform: translate(18px,-26px) rotate(6deg); }
+		50% { transform: translate(-14px,-46px) rotate(-4deg); }
+		75% { transform: translate(-22px,-16px) rotate(5deg); }
+		100% { transform: translate(0,0) rotate(0deg); }
+	}
+
+	html.custom-cursor, html.custom-cursor a, html.custom-cursor button, html.custom-cursor input,
+	html.custom-cursor textarea, html.custom-cursor .card, html.custom-cursor .chip { cursor: none; }
+	.cursor-ring {
+		position: fixed; top: 0; left: 0; width: 20px; height: 20px; border-radius: 50%;
+		border: 1.5px solid rgba(154,140,255,0.85); pointer-events: none; z-index: 9999;
+		transform: translate(-50%,-50%);
+		transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+	}
+	.cursor-ring.hover { width: 42px; height: 42px; background: rgba(154,140,255,0.14); border-color: rgba(154,140,255,1); }
+	@media (hover: none), (pointer: coarse) { .cursor-ring { display: none; } }
 	.brand { display: flex; align-items: center; gap: 10px; }
 	.brand-mark {
 		width: 24px; height: 24px; border-radius: 7px; background: #15161c;
@@ -81,7 +115,6 @@ export const SOURCE_URL =
 export const ISSUES_URL =
 	'https://github.com/everestmcarthur/revenge-next-plugs/issues'
 
-/** Shared header markup - same nav (Plugins/Source/Issues) on every page for consistency. */
 export function renderHeader(opts: {
 	brandName: string
 	brandHref?: string
@@ -100,6 +133,42 @@ export function renderHeader(opts: {
 			</nav>
 		</header>`
 }
+
+const FLOATERS = `
+	<div class="bg-blobs"><div class="bg-blob b1"></div><div class="bg-blob b2"></div><div class="bg-blob b3"></div></div>
+	<div class="floaters" aria-hidden="true">
+		<span class="float-icon" style="top:12%;left:8%;font-size:34px;animation-duration:22s;">🏳️‍🌈</span>
+		<span class="float-icon" style="top:65%;left:87%;font-size:26px;animation-duration:18s;animation-delay:-4s;">✨</span>
+		<span class="float-icon" style="top:80%;left:15%;font-size:30px;animation-duration:26s;animation-delay:-9s;">🚀</span>
+		<span class="float-icon" style="top:20%;left:92%;font-size:24px;animation-duration:20s;animation-delay:-3s;">⚡</span>
+		<span class="float-icon" style="top:46%;left:50%;font-size:22px;animation-duration:28s;animation-delay:-14s;">🎮</span>
+	</div>`
+
+const CURSOR_SCRIPT = `
+	<script>
+	(function() {
+		if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return
+		var ring = document.createElement('div')
+		ring.className = 'cursor-ring'
+		document.body.appendChild(ring)
+		document.documentElement.classList.add('custom-cursor')
+		var x = innerWidth / 2, y = innerHeight / 2, rx = x, ry = y
+		addEventListener('mousemove', function (e) { x = e.clientX; y = e.clientY })
+		function loop() {
+			rx += (x - rx) * 0.22
+			ry += (y - ry) * 0.22
+			ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px) translate(-50%,-50%)'
+			requestAnimationFrame(loop)
+		}
+		loop()
+		document.addEventListener('mouseover', function (e) {
+			if (e.target.closest && e.target.closest('a, button, .card, .chip, #install-card')) ring.classList.add('hover')
+		})
+		document.addEventListener('mouseout', function (e) {
+			if (e.target.closest && e.target.closest('a, button, .card, .chip, #install-card')) ring.classList.remove('hover')
+		})
+	})()
+	</script>`
 
 export function htmlShell(opts: {
 	title: string
@@ -124,7 +193,7 @@ export function htmlShell(opts: {
 <meta name="twitter:description" content="${escapeHtml(ogDescription)}">
 <style>${PAGE_CSS}</style>
 </head>
-<body>${opts.body}</body>
+<body>${FLOATERS}${opts.body}${CURSOR_SCRIPT}</body>
 </html>`
 }
 

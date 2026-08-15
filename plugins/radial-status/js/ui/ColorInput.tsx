@@ -21,11 +21,6 @@ interface ColorInputProps {
 	onChange: (value: string) => void
 }
 
-/**
- * Hex color field with a live swatch preview and tap-to-pick presets. Built entirely from RN
- * primitives (no Discord-internal component reuse), so it doesn't carry the same "might silently
- * stop rendering after a Discord update" risk as the plugin's UI patches do.
- */
 export default function ColorInput({
 	title,
 	value,

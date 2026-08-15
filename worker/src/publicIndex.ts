@@ -24,13 +24,6 @@ export interface BaseIndex {
 	plugins: Record<string, IndexPlugin>
 }
 
-/**
- * Merges the git-tracked base index (real versions/hashes, never touched) with live D1
- * overrides: hidden plugins drop out, edited display fields win, and whatever version is
- * mapped to the 'stable' channel becomes 'latest' - the only field of `channels` a public
- * consumer (Next's installer) ever reads. alpha/beta stay in `channels` for the admin UI's
- * own use but are meaningless to a public client.
- */
 export function buildPublicIndex(
 	base: BaseIndex,
 	overrides: Record<string, Override>,
@@ -41,16 +34,18 @@ export function buildPublicIndex(
 		const override = overrides[id]
 		if (override?.hidden) continue
 
-		const pluginChannels = channels[id]
-		const stable = pluginChannels?.stable
+		const pluginChannels = channels[id] ?? {}
+		const validChannels = Object.fromEntries(
+			Object.entries(pluginChannels).filter(
+				([, version]) => version in plugin.versions,
+			),
+		)
+
 		plugins[id] = {
 			...plugin,
 			name: override?.name ?? plugin.name,
 			description: override?.description ?? plugin.description,
-			channels: {
-				...plugin.channels,
-				...(stable && stable in plugin.versions ? { latest: stable } : {}),
-			},
+			channels: { ...plugin.channels, ...validChannels },
 		}
 	}
 	return { ...base, plugins }

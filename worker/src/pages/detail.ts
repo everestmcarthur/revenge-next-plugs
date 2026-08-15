@@ -20,7 +20,7 @@ export function renderDetailPage(
 		? `<ul>${override.features.map(f => `<li>${escapeHtml(f)}</li>`).join('')}</ul>`
 		: ''
 
-	const repoUrl = 'https://next.jarviscli.dev/index.json'
+	const repoUrl = 'https://next.jarviscli.dev'
 
 	const body = `
 		${renderHeader({ brandName: plugin.name })}

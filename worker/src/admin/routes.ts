@@ -1,9 +1,16 @@
-import { setChannel, setSiteSettings, upsertOverride } from '../db'
+import {
+	getAllChannels,
+	getAllOverrides,
+	getSiteSettings,
+	setChannel,
+	setSiteSettings,
+	upsertOverride,
+} from '../db'
 import { checkAuth } from './auth'
 import type { Env } from '../env'
 import type { BaseIndex } from '../publicIndex'
 
-const PLUGIN_ID_REGEX = /^[a-zA-Z0-9.-]+$/ // matches generate-index.ts's own validation exactly
+const PLUGIN_ID_REGEX = /^[a-zA-Z0-9.-]+$/
 
 function json(data: unknown, status = 200): Response {
 	return new Response(JSON.stringify(data), {
@@ -14,7 +21,6 @@ function json(data: unknown, status = 200): Response {
 
 const DEFAULT_MAIN_JS = `export default plugin({\n\tstart() {},\n})\n`
 
-/** Returns null if `url.pathname` isn't an admin API route, so the caller can fall through. */
 export async function handleAdminApi(
 	request: Request,
 	env: Env,
@@ -23,6 +29,17 @@ export async function handleAdminApi(
 	if (!url.pathname.startsWith('/api/admin/')) return null
 
 	if (!checkAuth(request, env)) return json({ error: 'unauthorized' }, 401)
+
+	if (url.pathname === '/api/admin/state' && request.method === 'GET') {
+		const baseRes = await env.ASSETS.fetch('https://internal/index.json')
+		const base = await baseRes.json<BaseIndex>()
+		const [overrides, channels, site] = await Promise.all([
+			getAllOverrides(env),
+			getAllChannels(env),
+			getSiteSettings(env),
+		])
+		return json({ base, overrides, channels, site })
+	}
 
 	if (url.pathname === '/api/admin/site' && request.method === 'PUT') {
 		const body = await request
@@ -93,8 +110,6 @@ export async function handleAdminApi(
 		const body = await request.json<{ version?: string }>().catch(() => null)
 		if (!body?.version) return json({ error: 'version required' }, 400)
 
-		// Mirrors generate-index.ts's own "Channel override points at unpublished version" check -
-		// a channel can only ever point at a version that's actually in the built index.
 		const baseRes = await env.ASSETS.fetch('https://internal/index.json')
 		const base = await baseRes.json<BaseIndex>()
 		const plugin = base.plugins[id]
