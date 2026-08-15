@@ -1,4 +1,4 @@
-import { htmlShell } from '../theme'
+import { htmlShell, renderHeader } from '../theme'
 
 /**
  * Single-page admin UI: a token field gates everything else client-side (the real gate is
@@ -7,13 +7,7 @@ import { htmlShell } from '../theme'
  */
 export function renderAdminPage(): string {
 	const body = `
-		<header>
-			<div class="brand">
-				<a href="/" class="brand-mark" style="text-decoration:none;">N</a>
-				<div class="brand-name">Admin</div>
-			</div>
-			<nav><a href="/">Back to site</a></nav>
-		</header>
+		${renderHeader({ brandName: 'Admin' })}
 		<div class="wrap" style="padding-top:22px;">
 			<div id="gate">
 				<div class="page-sub">Admin token</div>

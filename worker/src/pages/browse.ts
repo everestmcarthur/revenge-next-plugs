@@ -1,4 +1,4 @@
-import { escapeHtml, htmlShell } from '../theme'
+import { escapeHtml, htmlShell, renderHeader } from '../theme'
 import type { Override } from '../db'
 import type { BaseIndex } from '../publicIndex'
 
@@ -30,16 +30,15 @@ export function renderBrowsePage(
 		.join('')
 
 	const body = `
-		<header>
-			<div class="brand">
-				<div class="brand-mark">N</div>
-				<div class="brand-name">${escapeHtml(index.name)}</div>
-			</div>
-			<nav><span>Plugins</span></nav>
-		</header>
+		${renderHeader({ brandName: index.name })}
 		<div class="wrap">
-			<div class="page-title" style="margin-top: 22px;">Plugins</div>
-			<div class="page-sub">${entries.length} available &middot; installs directly into Revenge Next</div>
+			<h1>Build different<span class="accent">.</span></h1>
+			<div class="page-sub">Plugins for Revenge Next, made to be installed in seconds and to actually feel finished.</div>
+			<div class="stats">
+				<div class="stat"><b>${entries.length}</b><span>Plugins</span></div>
+				<div class="stat"><b>100%</b><span>Open source</span></div>
+				<div class="stat"><b>1-tap</b><span>Install</span></div>
+			</div>
 			<div class="grid">${cards}</div>
 		</div>`
 

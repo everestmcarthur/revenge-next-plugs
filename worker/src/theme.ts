@@ -2,55 +2,104 @@ export const PAGE_CSS = `
 	* { box-sizing: border-box; }
 	body {
 		margin: 0;
-		background: #0b0c10;
-		color: #e8e9ed;
+		background: linear-gradient(180deg, #0c0d12, #08090c);
+		color: #fff;
 		font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
 	}
 	a { color: inherit; text-decoration: none; }
-	.wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+	.wrap { max-width: 1040px; margin: 0 auto; padding: 0 32px; }
 	header {
 		display: flex; align-items: center; justify-content: space-between;
-		padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.07);
+		padding: 20px 32px; border-bottom: 1px solid rgba(255,255,255,0.07);
 	}
 	.brand { display: flex; align-items: center; gap: 10px; }
 	.brand-mark {
-		width: 22px; height: 22px; border-radius: 6px; background: #15161c;
+		width: 24px; height: 24px; border-radius: 7px; background: #15161c;
 		border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center;
-		justify-content: center; font-size: 11px; font-weight: 700; color: #9a8cff;
+		justify-content: center; font-size: 12px; font-weight: 700; color: #9a8cff;
 	}
-	.brand-name { font-weight: 600; font-size: 13.5px; letter-spacing: -0.01em; }
-	nav { display: flex; align-items: center; gap: 18px; font-size: 12px; color: rgba(255,255,255,0.5); }
-	.page-title { font-size: 19px; font-weight: 650; letter-spacing: -0.015em; margin-bottom: 4px; }
-	.page-sub { font-size: 12.5px; color: rgba(255,255,255,0.45); margin-bottom: 16px; }
+	.brand-name { font-weight: 650; font-size: 14.5px; letter-spacing: -0.01em; }
+	nav { display: flex; align-items: center; gap: 22px; font-size: 13px; color: rgba(255,255,255,0.5); }
+	nav a:hover { color: rgba(255,255,255,0.85); }
+
+	h1 { font-size: 58px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin: 0 0 16px; }
+	h1 .accent { color: #9a8cff; }
+	.page-title { font-size: 58px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin: 44px 0 16px; }
+	.page-sub { font-size: 16.5px; color: rgba(255,255,255,0.55); max-width: 520px; line-height: 1.55; margin-bottom: 30px; }
+
+	.stats { display: flex; gap: 36px; margin-bottom: 44px; padding-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+	.stat b { display: block; font-size: 30px; font-weight: 750; }
+	.stat span { font-size: 12px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.04em; }
+
 	.chip {
 		background: transparent; border: 1px solid rgba(255,255,255,0.07); border-radius: 7px;
-		padding: 5px 11px; font-size: 11.5px; color: rgba(255,255,255,0.4); display: inline-block;
+		padding: 6px 13px; font-size: 12.5px; color: rgba(255,255,255,0.4); display: inline-block;
+		transition: border-color 0.2s ease, color 0.2s ease;
 	}
 	.chip.active { background: #17181e; border-color: rgba(255,255,255,0.09); color: rgba(255,255,255,0.85); }
-	.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 4px 0 24px; }
+
+	.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 4px 0 40px; }
 	.card {
-		background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
-		border: 1px solid rgba(255,255,255,0.08); border-radius: 11px; padding: 15px;
+		background: #131318; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 24px;
+		position: relative; overflow: hidden;
+		transition: transform 0.3s cubic-bezier(.2,.8,.2,1), border-color 0.3s ease;
 	}
-	.card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+	.card::before {
+		content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+		background: radial-gradient(160px 120px at 20% 0%, rgba(154,140,255,0.22), transparent 70%);
+	}
+	.card:hover { transform: translateY(-6px) scale(1.01); border-color: rgba(154,140,255,0.45); }
+	.card:hover::before { opacity: 1; }
+	.card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
 	.card-icon {
-		width: 30px; height: 30px; border-radius: 8px; background: #1a1b22;
+		width: 34px; height: 34px; border-radius: 9px; background: #1a1b22;
 		border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center;
-		justify-content: center; font-size: 13px;
+		justify-content: center; font-size: 15px;
 	}
 	.badge {
 		background: rgba(154,140,255,0.12); color: #b6acff; border: 1px solid rgba(154,140,255,0.25);
-		font-size: 9.5px; font-weight: 600; padding: 2px 7px; border-radius: 5px;
+		font-size: 10px; font-weight: 650; padding: 3px 8px; border-radius: 5px;
 	}
-	.card-name { font-size: 13.5px; font-weight: 600; letter-spacing: -0.005em; }
-	.card-desc { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 3px; line-height: 1.4; }
-	.card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
-	.card-meta { font-size: 10px; color: rgba(255,255,255,0.35); }
+	.card-name { position: relative; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+	.card-desc { position: relative; font-size: 13.5px; color: rgba(255,255,255,0.55); margin-top: 6px; line-height: 1.5; }
+	.card-foot { position: relative; display: flex; align-items: center; justify-content: space-between; margin-top: 18px; }
+	.card-meta { font-size: 11.5px; color: rgba(255,255,255,0.4); }
 	.btn {
-		background: #e8e9ed; color: #0b0c10; font-size: 10.5px; font-weight: 600;
-		padding: 4px 10px; border-radius: 6px; display: inline-block;
+		background: #e8e9ed; color: #0b0c10; font-size: 13px; font-weight: 650;
+		padding: 8px 16px; border-radius: 8px; display: inline-block;
+		transition: transform 0.2s ease, opacity 0.2s ease;
+	}
+	.btn:hover { transform: translateY(-2px); opacity: 0.92; }
+	.btn-ghost {
+		border: 1px solid rgba(255,255,255,0.16); color: #fff; font-size: 13px; font-weight: 600;
+		padding: 8px 16px; border-radius: 8px; display: inline-block;
 	}
 `
+
+export const SOURCE_URL =
+	'https://github.com/everestmcarthur/revenge-next-plugs'
+export const ISSUES_URL =
+	'https://github.com/everestmcarthur/revenge-next-plugs/issues'
+
+/** Shared header markup - same nav (Plugins/Source/Issues) on every page for consistency. */
+export function renderHeader(opts: {
+	brandName: string
+	brandHref?: string
+}): string {
+	const brandHref = opts.brandHref ?? '/'
+	return `
+		<header>
+			<div class="brand">
+				<a href="${brandHref}" class="brand-mark" style="text-decoration:none;">N</a>
+				<div class="brand-name">${escapeHtml(opts.brandName)}</div>
+			</div>
+			<nav>
+				<a href="/">Plugins</a>
+				<a href="${SOURCE_URL}" target="_blank" rel="noopener">Source</a>
+				<a href="${ISSUES_URL}" target="_blank" rel="noopener">Issues</a>
+			</nav>
+		</header>`
+}
 
 export function htmlShell(opts: {
 	title: string
