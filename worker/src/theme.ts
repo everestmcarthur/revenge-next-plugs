@@ -90,6 +90,7 @@ export const PAGE_CSS = `
 		border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center;
 		justify-content: center; font-size: 15px;
 	}
+	.badge-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 	.badge {
 		background: rgba(154,140,255,0.12); color: #b6acff; border: 1px solid rgba(154,140,255,0.25);
 		font-size: 10px; font-weight: 650; padding: 3px 8px; border-radius: 5px;
@@ -98,16 +99,19 @@ export const PAGE_CSS = `
 	.card-desc { position: relative; font-size: 13.5px; color: rgba(255,255,255,0.55); margin-top: 6px; line-height: 1.5; }
 	.card-foot { position: relative; display: flex; align-items: center; justify-content: space-between; margin-top: 18px; }
 	.card-meta { font-size: 11.5px; color: rgba(255,255,255,0.4); }
+	button { font-family: inherit; }
 	.btn {
 		background: #e8e9ed; color: #0b0c10; font-size: 13px; font-weight: 650;
-		padding: 8px 16px; border-radius: 8px; display: inline-block;
+		padding: 8px 16px; border-radius: 8px; display: inline-block; border: none; cursor: pointer;
 		transition: transform 0.2s ease, opacity 0.2s ease;
 	}
 	.btn:hover { transform: translateY(-2px); opacity: 0.92; }
 	.btn-ghost {
-		border: 1px solid rgba(255,255,255,0.16); color: #fff; font-size: 13px; font-weight: 600;
-		padding: 8px 16px; border-radius: 8px; display: inline-block;
+		background: transparent; border: 1px solid rgba(255,255,255,0.16); color: #fff;
+		font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 8px;
+		display: inline-block; cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease;
 	}
+	.btn-ghost:hover { border-color: rgba(255,255,255,0.32); background: rgba(255,255,255,0.04); }
 `
 
 export const SOURCE_URL =

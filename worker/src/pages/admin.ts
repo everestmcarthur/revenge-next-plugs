@@ -10,7 +10,7 @@ export function renderAdminPage(): string {
 			<div id="gate">
 				<div class="page-sub">Admin token</div>
 				<input id="token" type="password" style="${INPUT_STYLE}max-width:280px;">
-				<button id="unlock" class="btn" style="border:none;cursor:pointer;margin-left:8px;">Unlock</button>
+				<button id="unlock" class="btn" style="margin-left:8px;">Unlock</button>
 			</div>
 			<div id="panel" style="display:none;"></div>
 		</div>
@@ -38,6 +38,17 @@ export function renderAdminPage(): string {
 					</div>\`
 			}
 
+			function flashSaved(btn) {
+				return new Promise((resolve) => {
+					const original = btn.textContent
+					btn.textContent = 'Saved'
+					setTimeout(() => {
+						btn.textContent = original
+						resolve()
+					}, 700)
+				})
+			}
+
 			async function loadState() {
 				const res = await fetch('/api/admin/state', {
 					headers: { authorization: \`Bearer \${token}\` },
@@ -51,10 +62,10 @@ export function renderAdminPage(): string {
 						<div class="card-name">Site settings</div>
 						\${fieldRow('site', 'name', 'Site name', state.site?.name)}
 						\${fieldRow('site', 'description', 'Site description', state.site?.description, true)}
-						<button id="save-site" class="btn" style="border:none;cursor:pointer;">Save site settings</button>
+						<button id="save-site" class="btn">Save site settings</button>
 					</div>\`
 
-				document.getElementById('save-site').addEventListener('click', async () => {
+				document.getElementById('save-site').addEventListener('click', async (e) => {
 					const name = document.querySelector('[data-id="site"][data-field="name"]').value
 					const description = document.querySelector('[data-id="site"][data-field="description"]').value
 					await fetch('/api/admin/site', {
@@ -62,6 +73,7 @@ export function renderAdminPage(): string {
 						headers: { 'content-type': 'application/json', authorization: \`Bearer \${token}\` },
 						body: JSON.stringify({ name, description }),
 					})
+					await flashSaved(e.currentTarget)
 					init()
 				})
 			}
@@ -73,7 +85,7 @@ export function renderAdminPage(): string {
 					<div style="display:flex;gap:8px;margin-bottom:6px;" class="channel-row">
 						<input placeholder="channel name" value="\${channel}" data-channel-name style="\${INPUT_STYLE}width:140px;flex:none;">
 						<input placeholder="version" value="\${version}" data-channel-version style="\${INPUT_STYLE}width:100px;flex:none;">
-						<button data-id="\${id}" class="btn-ghost set-channel" style="border-width:1px;cursor:pointer;">Set</button>
+						<button data-id="\${id}" class="btn-ghost set-channel">Set</button>
 					</div>\`).join('')
 			}
 
@@ -92,12 +104,12 @@ export function renderAdminPage(): string {
 								<label style="font-size:11px;display:flex;align-items:center;gap:4px;margin-bottom:10px;">
 									<input type="checkbox" data-id="\${id}" data-field="hidden" \${o.hidden ? 'checked' : ''}> hidden
 								</label>
-								<button data-id="\${id}" class="btn save" style="border:none;cursor:pointer;">Save</button>
+								<button data-id="\${id}" class="btn save">Save</button>
 							</div>
 							<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);">
 								<div style="font-size:10.5px;color:rgba(255,255,255,0.4);margin-bottom:6px;">Channels (any name - Next's client lists these for the user to pick)</div>
 								<div class="channels" data-id="\${id}">\${channelRows(id, state.channels[id])}</div>
-								<button data-id="\${id}" class="btn-ghost add-channel-row" style="border-width:1px;cursor:pointer;margin-top:4px;">+ Add channel</button>
+								<button data-id="\${id}" class="btn-ghost add-channel-row" style="margin-top:4px;">+ Add channel</button>
 							</div>
 						</div>\`
 				}).join('')
@@ -125,6 +137,7 @@ export function renderAdminPage(): string {
 						headers: { 'content-type': 'application/json', authorization: \`Bearer \${token}\` },
 						body: JSON.stringify(patch),
 					})
+					await flashSaved(btn)
 					init()
 				}))
 
@@ -157,6 +170,7 @@ export function renderAdminPage(): string {
 								alert(data.error)
 								return
 							}
+							await flashSaved(btn)
 							init()
 						})
 					})

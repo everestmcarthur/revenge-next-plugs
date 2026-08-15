@@ -13,11 +13,17 @@ export function renderBrowsePage(
 			const override = overrides[id]
 			const version = plugin.channels.latest ?? Object.keys(plugin.versions)[0]
 			const tagline = override?.tagline ?? plugin.description
+			const badges = Object.keys(plugin.channels)
+				.map(
+					channel =>
+						`<div class="badge">${escapeHtml(channel.toUpperCase())}</div>`,
+				)
+				.join('')
 			return `
 				<div class="card">
 					<div class="card-top">
 						<div class="card-icon">${plugin.icon ? escapeHtml(plugin.icon) : '\u{1F9E9}'}</div>
-						<div class="badge">STABLE</div>
+						<div class="badge-row">${badges}</div>
 					</div>
 					<div class="card-name"><a href="/plugins/${encodeURIComponent(id)}">${escapeHtml(plugin.name)}</a></div>
 					<div class="card-desc">${escapeHtml(tagline)}</div>
