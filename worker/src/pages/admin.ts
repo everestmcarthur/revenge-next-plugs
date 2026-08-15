@@ -18,6 +18,7 @@ export function renderAdminPage(): string {
 			const gate = document.getElementById('gate')
 			const panel = document.getElementById('panel')
 			let token = ''
+			const INPUT_STYLE = ${JSON.stringify(INPUT_STYLE)}
 
 			const TEXT_FIELDS = [
 				['name', 'Name'], ['description', 'Description'], ['tagline', 'Tagline'],
@@ -33,7 +34,7 @@ export function renderAdminPage(): string {
 				return \`
 					<div style="margin-bottom:8px;">
 						<div style="font-size:10.5px;color:rgba(255,255,255,0.4);margin-bottom:3px;">\${label}</div>
-						<\${tag} data-id="\${id}" data-field="\${key}" style="\${'${INPUT_STYLE}'}"\${valueAttr}>\${inner}</\${closeTag}>
+						<\${tag} data-id="\${id}" data-field="\${key}" style="\${INPUT_STYLE}"\${valueAttr}>\${inner}</\${closeTag}>
 					</div>\`
 			}
 
@@ -163,10 +164,15 @@ export function renderAdminPage(): string {
 			}
 
 			async function init() {
-				const state = await loadState()
-				panel.innerHTML = '<div id="site"></div><div id="plugins"></div>'
-				renderSite(state)
-				renderPlugins(state)
+				try {
+					const state = await loadState()
+					if (state.error) throw new Error(state.error)
+					panel.innerHTML = '<div id="site"></div><div id="plugins"></div>'
+					renderSite(state)
+					renderPlugins(state)
+				} catch (e) {
+					panel.innerHTML = \`<div class="page-sub" style="color:#f23f42;">Failed to load: \${e.message ?? e}</div>\`
+				}
 			}
 
 			document.getElementById('unlock').addEventListener('click', () => {
