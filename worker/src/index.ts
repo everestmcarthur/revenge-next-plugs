@@ -1,4 +1,6 @@
+import { handleAdminApi } from './admin/routes'
 import { getAllChannels, getAllOverrides } from './db'
+import { renderAdminPage } from './pages/admin'
 import { renderBrowsePage } from './pages/browse'
 import { renderDetailPage } from './pages/detail'
 import { buildPublicIndex } from './publicIndex'
@@ -63,6 +65,15 @@ export default {
 				headers: { 'content-type': 'text/html; charset=utf-8' },
 			})
 		}
+
+		if (url.pathname === '/admin') {
+			return new Response(renderAdminPage(), {
+				headers: { 'content-type': 'text/html; charset=utf-8' },
+			})
+		}
+
+		const adminApiRes = await handleAdminApi(request, env, url)
+		if (adminApiRes) return adminApiRes
 
 		return env.ASSETS.fetch(request)
 	},
