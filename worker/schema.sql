@@ -27,3 +27,13 @@ CREATE TABLE plugin_channels (
     updated_at TEXT NOT NULL,
     PRIMARY KEY (plugin_id, channel)
 );
+
+-- Single-row table (id always 'site') for site-wide admin-editable metadata: name/description
+-- shown in the browse page hero and used as the default OG tags, overriding repo.config.json's
+-- static values without needing a redeploy.
+CREATE TABLE IF NOT EXISTS site_settings (
+    id TEXT PRIMARY KEY,
+    name TEXT,
+    description TEXT,
+    updated_at TEXT NOT NULL
+);

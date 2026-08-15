@@ -1,4 +1,4 @@
-import { setChannel, upsertOverride } from '../db'
+import { setChannel, setSiteSettings, upsertOverride } from '../db'
 import { checkAuth } from './auth'
 import type { Env } from '../env'
 import type { BaseIndex } from '../publicIndex'
@@ -23,6 +23,19 @@ export async function handleAdminApi(
 	if (!url.pathname.startsWith('/api/admin/')) return null
 
 	if (!checkAuth(request, env)) return json({ error: 'unauthorized' }, 401)
+
+	if (url.pathname === '/api/admin/site' && request.method === 'PUT') {
+		const body = await request
+			.json<{ name?: string; description?: string }>()
+			.catch(() => null)
+		if (!body) return json({ error: 'invalid body' }, 400)
+
+		await setSiteSettings(env, {
+			name: body.name,
+			description: body.description,
+		})
+		return json({ ok: true })
+	}
 
 	const overrideMatch = url.pathname.match(
 		/^\/api\/admin\/overrides\/([\w.-]+)$/,

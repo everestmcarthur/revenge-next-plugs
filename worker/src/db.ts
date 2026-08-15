@@ -160,6 +160,43 @@ export async function upsertOverride(
 		.run()
 }
 
+export interface SiteSettings {
+	name?: string
+	description?: string
+}
+
+export async function getSiteSettings(env: Env): Promise<SiteSettings | null> {
+	const row = await env.DB.prepare(
+		'SELECT name, description FROM site_settings WHERE id = ?1',
+	)
+		.bind('site')
+		.first<{ name: string | null; description: string | null }>()
+	if (!row) return null
+	return {
+		name: row.name ?? undefined,
+		description: row.description ?? undefined,
+	}
+}
+
+export async function setSiteSettings(
+	env: Env,
+	patch: Partial<SiteSettings>,
+): Promise<void> {
+	const existing = await getSiteSettings(env)
+	const merged: SiteSettings = { ...existing, ...patch }
+
+	await env.DB.prepare(
+		`INSERT INTO site_settings (id, name, description, updated_at) VALUES ('site', ?1, ?2, ?3)
+		 ON CONFLICT(id) DO UPDATE SET name = excluded.name, description = excluded.description, updated_at = excluded.updated_at`,
+	)
+		.bind(
+			merged.name ?? null,
+			merged.description ?? null,
+			new Date().toISOString(),
+		)
+		.run()
+}
+
 export async function setChannel(
 	env: Env,
 	id: string,

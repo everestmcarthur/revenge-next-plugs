@@ -6,6 +6,12 @@ main = "worker/src/index.ts"
 [assets]
 directory = "build/dist"
 binding = "ASSETS"
+# Without this, Cloudflare serves a matching static file (e.g. /index.json, which is a real file
+# Gradle writes to build/dist) BEFORE ever invoking the Worker - meaning /index.json's dynamic D1
+# merge (hidden filtering, stable-channel-as-latest, site-settings overrides) silently never ran
+# for that exact path. Worker always runs first now; its own fallback (env.ASSETS.fetch) still
+# serves genuine static files (the plugin .zip artifacts) for anything it doesn't handle itself.
+run_worker_first = true
 
 [[d1_databases]]
 binding = "DB"
