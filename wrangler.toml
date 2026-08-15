@@ -1,9 +1,16 @@
 name = "revenge-next-plugs"
 compatibility_date = "2026-08-08"
 account_id = "dc5e308f1df2d6bb5082951d3f3993a5"
+main = "worker/src/index.ts"
 
 [assets]
 directory = "build/dist"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "revenge-next-plugs"
+database_id = "dacf9207-d24a-4029-bb63-feea62bca6ec"
 
 [[routes]]
 pattern = "next.jarviscli.dev"
