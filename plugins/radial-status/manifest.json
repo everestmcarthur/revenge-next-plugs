@@ -1,0 +1,19 @@
+{
+	"format": 1,
+	"id": "dev.everestmcarthur.radial-status",
+	"name": "Radial Status",
+	"description": "Replaces the small presence dot on avatars with a colored ring instead - one color per status (online/idle/dnd/offline), fully configurable, plus thickness control.",
+	"author": "Rosie",
+	"version": "1.0.0",
+	"dependencies": {
+		"revenge.api": {
+			"version": ">=1 <2"
+		},
+		"discord": {
+			"version": "*"
+		}
+	},
+	"dist": {
+		"script": "index.js"
+	}
+}
