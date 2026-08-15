@@ -1,0 +1,51 @@
+name: A plugin stopped working after a Discord update
+description: The most common failure mode here - Discord renamed/removed something a plugin depends on
+labels: ["bug", "discord-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Discord's internals change without notice, and plugins in this ecosystem patch those internals
+        directly - this is the single most common way something breaks here. Reports like this are
+        genuinely useful, thank you.
+
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Which plugin?
+      options:
+        - Staff Tags
+        - Radial Status
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: What stopped showing up / working?
+      description: Pick whichever's closest - helps narrow down which patch broke
+      options:
+        - Chat messages
+        - Member list
+        - Profile popout
+        - Channel header
+        - Avatar / presence indicator
+        - A slash command
+        - Not sure
+    validations:
+      required: false
+
+  - type: input
+    id: discord-version
+    attributes:
+      label: Discord app version (Settings → About)
+      placeholder: "e.g. 343.2"
+    validations:
+      required: true
+
+  - type: textarea
+    id: worked-before
+    attributes:
+      label: Did this work before, and if so, roughly when did it stop?
+    validations:
+      required: false

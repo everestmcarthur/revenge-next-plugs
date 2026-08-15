@@ -1,0 +1,47 @@
+name: Bug report
+description: Something in a plugin is broken or behaving wrong
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Which plugin?
+      options:
+        - Staff Tags
+        - Radial Status
+        - Not sure / something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you actually get?
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Enable the plugin
+        2. ...
+    validations:
+      required: false
+
+  - type: input
+    id: discord-version
+    attributes:
+      label: Discord app version (Settings → About)
+      placeholder: "e.g. 343.2"
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Anything in your logs/debugger, if you have one enabled?
+    validations:
+      required: false
