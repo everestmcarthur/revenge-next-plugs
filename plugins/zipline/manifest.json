@@ -1,0 +1,20 @@
+{
+	"format": 1,
+	"id": "dev.everestmcarthur.zipline",
+	"name": "Zipline",
+	"description": "Uploads attachments and shortens links through a self-hosted Zipline instance instead of sending them natively.",
+	"author": "Rosie",
+	"icon": "ic_upload",
+	"version": "1.0.0",
+	"dependencies": {
+		"revenge.api": {
+			"version": ">=1 <2"
+		},
+		"discord": {
+			"version": "*"
+		}
+	},
+	"dist": {
+		"script": "index.js"
+	}
+}
